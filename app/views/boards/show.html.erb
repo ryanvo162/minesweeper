@@ -1,17 +1,67 @@
-<h1><%= @board.name %> Minesweeper Board</h1>
-
-<table>
-  <% @board.rows.times do |row| %>
-    <tr>
-      <% @board.columns.times do |col| %>
-        <td class="cell">
-          <% if @board.mines.include?([row, col]) %>
-            💣
-          <% end %>
-        </td>
-      <% end %>
-    </tr>
+<div class="relative flex flex-col items-center w-full gap-8 py-10 px-4">
+  <%= link_to root_path, class: "absolute top-4 left-4 bg-gray-500 hover:bg-gray-700 text-white font-light py-2 px-4 rounded flex items-center gap-2" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    <span>Back to Home</span>
   <% end %>
-</table>
+  <div class="flex flex-col items-center gap-4 text-center">
+    <h1 class="text-4xl font-medium">Minesweeper Board</h1>
+    <h2 class="text-xl font-light">Name of the Board: <%= @board.name %></h2>
+  </div>
 
-<a href="<%= root_path %>">Back to Home</a>
+  <div class="flex items-center gap-4 text-center text-base font-semibold">
+    <h2>Rows: <span class="font-light"><%= @board.rows %></span></h2>
+    <h2>Columns: <span class="font-light"><%= @board.columns %></span></h2>
+    <h2>Mines: <span class="font-light"><%= @board.number_of_mines %></span></h2>
+    <h2>Email: <span class="font-light"><%= @board.user.email %></span></h2>
+  </div>
+
+  <% start_row = params[:start_row].to_i || 0 %>
+  <% start_column = params[:start_column].to_i || 0 %>
+  <% limit_rows = (params[:limit_rows] || 20).to_i %>
+  <% limit_columns = (params[:limit_columns] || 20).to_i %>
+  <% end_row = [start_row + limit_rows - 1, @board.rows - 1].min %>
+  <% end_column = [start_column + limit_columns - 1].min %>
+
+  <div class="flex flex-col items-center gap-2 w-full">
+    <div class="flex gap-2 mb-4 items-center">
+      <label for="limit_rows" class="font-bold">Rows:</label>
+      <select id="limit_rows" name="limit_rows" class="border rounded pl-6" onchange="location.href='?limit_rows=' + this.value + '&limit_columns=' + document.getElementById('limit_columns').value + '&start_row=<%= start_row %>&start_column=<%= start_column %>'">
+          <% (5..100).step(5).each do |i| %>
+            <option value="<%= i %>" <%= 'selected' if i == limit_rows %>><%= i %></option>
+          <% end %>
+      </select>
+      <label for="limit_columns" class="font-bold">Columns:</label>
+      <select id="limit_columns" name="limit_columns" class="border rounded pl-6" onchange="location.href='?limit_rows=' + document.getElementById('limit_rows').value + '&limit_columns=' + this.value + '&start_row=<%= start_row %>&start_column=<%= start_column %>'">
+          <% (5..100).step(5).each do |i| %>
+            <option value="<%= i %>" <%= 'selected' if i == limit_columns %>><%= i %></option>
+          <% end %>
+      </select>
+    </div>
+    <%= link_to '⬆️', board_path(@board, start_row: [start_row - limit_rows, 0].max, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_row <= 0 ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_row <= 0 %>
+    <div class="flex items-center gap-2 max-w-full overflow-x-auto">
+      <%= link_to '⬅️', board_path(@board, start_row: start_row, start_column: [start_column - limit_columns, 0].max, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_column <= 0 ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_column <= 0 %>
+      <div class="bg-white shadow-xl border-t border-solid border-gray-200 rounded-xl p-4">
+        <div class="flex">
+          <div class="w-6 h-6"></div>
+          <% (start_column..end_column).each do |column| %>
+            <div class="w-6 h-6 flex items-center justify-center <%= column >= 1000 ? 'text-[10px]' : column >= 100 ? 'text-xs' : 'text-base' %> <%= column >= 1000 ? 'font-extralight' : column >= 100 ? 'font-light' : 'font-medium' %>"><%= column + 1 %></div>
+          <% end %>
+        </div>
+        <% (start_row..end_row).each do |row| %>
+          <div class="flex">
+            <div class="w-6 h-6 flex items-center justify-center <%= row >= 1000 ? 'text-[10px]' : row >= 100 ? 'text-xs' : 'text-base' %> <%= row >= 1000 ? 'font-extralight' : row >= 100 ? 'font-light' : 'font-medium' %>"><%= row + 1 %></div>
+            <% (start_column..end_column).each do |column| %>
+              <div class="border flex items-center justify-center w-6 h-6 leading-none text-lg">
+                <%= @board.mines.include?([row, column]) ? '💣' : '⬜️' %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <%= link_to '➡️', board_path(@board, start_row: start_row, start_column: [start_column + limit_columns, @board.columns - limit_columns].min, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_column + limit_columns >= @board.columns ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_column + limit_columns >= @board.columns %>
+    </div>
+    <%= link_to '⬇️', board_path(@board, start_row: [start_row + limit_rows, @board.rows - limit_rows].min, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_row + limit_rows >= @board.rows ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_row + limit_rows >= @board.rows %>
+  </div>
+</div>
