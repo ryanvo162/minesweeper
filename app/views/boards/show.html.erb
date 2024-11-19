@@ -1,0 +1,17 @@
+<h1><%= @board.name %> Minesweeper Board</h1>
+
+<table>
+  <% @board.rows.times do |row| %>
+    <tr>
+      <% @board.columns.times do |col| %>
+        <td class="cell">
+          <% if @board.mines.include?([row, col]) %>
+            💣
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+
+<a href="<%= root_path %>">Back to Home</a>
