@@ -1,0 +1,56 @@
+<div class="flex flex-col items-center w-full gap-10 py-10 px-4">
+  <%= link_to root_path, class: "bg-gray-500 hover:bg-gray-700 text-white font-light py-2 px-4 rounded flex items-center gap-2" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    <span>Back to Home</span>
+  <% end %>
+  <h1 class="text-4xl font-medium">Minesweeper Boards</h1>
+  <%= form_with url: boards_path, method: :get, local: true, class: 'w-full max-w-xl' do %>
+    <div class="flex items-center gap-4">
+      <%= text_field_tag :search, params[:search], placeholder: "Search by name", class: 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' %>
+      <%= submit_tag 'Search', class: 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' %>
+    </div>
+    <div class="flex items-center justify-self-center gap-4 mt-4">
+      <label for="per_page" class="font-bold">Items per page:</label>
+      <select id="per_page" name="per_page" class="border rounded pl-6" onchange="this.form.submit()">
+          <% [5, 10, 20, 50].each do |count| %>
+              <option value="<%= count %>" <%= 'selected' if count == params[:per_page].to_i %>><%= count %></option>
+          <% end %>
+      </select>
+    </div>
+  <% end %>
+  <% if @boards.any? %>
+    <div class="w-full flex flex-col items-center overflow-x-auto">
+      <table class="w-full bg-white max-w-5xl shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <thead>
+          <tr>
+            <th class="border-b-2 pb-2 text-left px-4">Name</th>
+            <th class="border-b-2 pb-2 text-left pr-4">Rows</th>
+            <th class="border-b-2 pb-2 text-left pr-4">Columns</th>
+            <th class="border-b-2 pb-2 text-left pr-4">Mines</th>
+            <th class="border-b-2 pb-2 text-left pr-4">Email</th>
+            <th class="border-b-2 pb-2 text-left px-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @boards.each do |board| %>
+            <tr>
+              <td class="border-b pb-2 px-4"><%= board.name %></td>
+              <td class="border-b pb-2 pr-4"><%= board.rows %></td>
+              <td class="border-b pb-2 pr-4"><%= board.columns %></td>
+              <td class="border-b pb-2 pr-4"><%= board.number_of_mines %></td>
+              <td class="border-b pb-2 pr-4"><%= board.user.email %></td>
+              <td class="border-b pb-2 px-4">
+                <%= link_to 'Show', board_path(board), class: 'text-blue-500 hover:text-blue-700' %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= paginate @boards %>
+  <% else %>
+    <p class="text-center text-gray-500">No boards available.</p>
+  <% end %>
+</div>

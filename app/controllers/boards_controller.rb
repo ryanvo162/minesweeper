@@ -1,4 +1,11 @@
 class BoardsController < ApplicationController
+  def index
+    @boards = Board.order(created_at: :desc)
+    @boards = @boards.where("name LIKE ?", "%#{params[:search]}%") if params[:search].present?
+    per_page = params[:per_page] || 10
+    @boards = @boards.page(params[:page]).per(per_page)
+  end
+
   def show
     @board = Board.find(params[:id])
   end

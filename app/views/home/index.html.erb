@@ -45,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @boards.limit(5).order(created_at: :desc).each do |board| %>
+          <% @boards.each do |board| %>
             <tr>
               <td class="border-b pb-2 px-4"><%= board.name %></td>
               <td class="border-b pb-2 pr-4"><%= board.rows %></td>
