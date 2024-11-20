@@ -11,3 +11,11 @@
 }
 
 */
+
+.arrow-button {
+  @apply flex items-center justify-center w-9 h-9 text-white font-bold rounded-full select-none;
+}
+
+.cell {
+  @apply w-6 h-6 flex items-center justify-center select-none;
+}

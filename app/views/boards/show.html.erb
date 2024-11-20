@@ -39,22 +39,22 @@
           <% end %>
       </select>
     </div>
-    <%= link_to '⬆️', board_path(@board, start_row: [start_row - limit_rows, 0].max, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_row <= 0 ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_row <= 0 %>
+    <%= link_to '⬆️', board_path(@board, start_row: [start_row - limit_rows, 0].max, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "arrow-button #{start_row <= 0 ? 'bg-gray-300 pointer-events-none' : 'bg-blue-50 hover:bg-blue-200'}", disabled: start_row <= 0 %>
     <div class="flex items-center gap-2 max-w-full overflow-x-auto">
-      <%= link_to '⬅️', board_path(@board, start_row: start_row, start_column: [start_column - limit_columns, 0].max, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_column <= 0 ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_column <= 0 %>
+      <%= link_to '⬅️', board_path(@board, start_row: start_row, start_column: [start_column - limit_columns, 0].max, limit_rows: limit_rows, limit_columns: limit_columns), class: "arrow-button #{start_column <= 0 ? 'bg-gray-300 pointer-events-none'  : 'bg-blue-50 hover:bg-blue-200'}", disabled: start_column <= 0 %>
       <div class="bg-white shadow-xl border-t border-solid border-gray-200 rounded-xl p-4">
         <div class="flex">
-          <div class="w-6 h-6"></div>
+          <div class="cell"></div>
           <% (start_column..end_column).each do |column| %>
-            <div class="w-6 h-6 flex items-center justify-center <%= column >= 1000 ? 'text-[10px]' : column >= 100 ? 'text-xs' : 'text-base' %> <%= column >= 1000 ? 'font-extralight' : column >= 100 ? 'font-light' : 'font-medium' %>"><%= column + 1 %></div>
+            <div class="cell <%= column >= 1000 ? 'text-[10px]' : column >= 100 ? 'text-xs' : 'text-base' %> <%= column >= 1000 ? 'font-extralight' : column >= 100 ? 'font-light' : 'font-medium' %>"><%= column + 1 %></div>
           <% end %>
         </div>
         <% (start_row..end_row).each do |row| %>
           <div class="flex">
-            <div class="w-6 h-6 flex items-center justify-center <%= row >= 1000 ? 'text-[10px]' : row >= 100 ? 'text-xs' : 'text-base' %> <%= row >= 1000 ? 'font-extralight' : row >= 100 ? 'font-light' : 'font-medium' %>"><%= row + 1 %></div>
+            <div class="cell <%= row >= 1000 ? 'text-[10px]' : row >= 100 ? 'text-xs' : 'text-base' %> <%= row >= 1000 ? 'font-extralight' : row >= 100 ? 'font-light' : 'font-medium' %>"><%= row + 1 %></div>
             <% (start_column..end_column).each do |column| %>
               <% cell = [row, column] %>
-              <div class="border flex items-center justify-center w-6 h-6 leading-none text-lg">
+              <div class="border cell leading-none text-lg">
                 <% if @board.clicked_cells.include?(cell) %>
                   <%= @board.mines.include?(cell) ? '💣' : '✅' %>
                 <% else %>
@@ -65,9 +65,9 @@
           </div>
         <% end %>
       </div>
-      <%= link_to '➡️', board_path(@board, start_row: start_row, start_column: [start_column + limit_columns, @board.columns - limit_columns].min, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_column + limit_columns >= @board.columns ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_column + limit_columns >= @board.columns %>
+      <%= link_to '➡️', board_path(@board, start_row: start_row, start_column: [start_column + limit_columns, @board.columns - limit_columns].min, limit_rows: limit_rows, limit_columns: limit_columns), class: "arrow-button #{start_column + limit_columns >= @board.columns ? 'bg-gray-300 pointer-events-none' : 'bg-blue-50 hover:bg-blue-200'}", disabled: start_column + limit_columns >= @board.columns %>
     </div>
-    <%= link_to '⬇️', board_path(@board, start_row: [start_row + limit_rows, @board.rows - limit_rows].min, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_row + limit_rows >= @board.rows ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_row + limit_rows >= @board.rows %>
+    <%= link_to '⬇️', board_path(@board, start_row: [start_row + limit_rows, @board.rows - limit_rows].min, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "arrow-button #{start_row + limit_rows >= @board.rows ? 'bg-gray-300 pointer-events-none' : 'bg-blue-50 hover:bg-blue-200'}", disabled: start_row + limit_rows >= @board.rows %>
   </div>
   <div id="snackbar" class="hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-center py-2 px-4 rounded">
     Congratulations! You found a mine!
