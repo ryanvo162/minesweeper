@@ -43,15 +43,8 @@ class BoardsController < ApplicationController
   end
 
   def generate_mines(board)
-    board.mines = []
-    positions = Set.new
-
-    while positions.size < board.number_of_mines
-      row = rand(board.rows)
-      column = rand(board.columns)
-      positions.add([row, column])
-    end
-
-    board.mines = positions.to_a
+    total_cells = board.rows * board.columns
+    mine_positions = (0...total_cells).to_a.sample(board.number_of_mines)
+    board.mines = mine_positions.map { |pos| [pos / board.columns, pos % board.columns] }
   end
 end
