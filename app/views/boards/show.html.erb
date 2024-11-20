@@ -29,7 +29,7 @@
     <div class="flex gap-2 mb-4 items-center">
       <label for="limit_rows" class="font-bold">Rows:</label>
       <select id="limit_rows" name="limit_rows" class="border rounded pl-6" onchange="location.href='?limit_rows=' + this.value + '&limit_columns=' + document.getElementById('limit_columns').value + '&start_row=<%= start_row %>&start_column=<%= start_column %>'">
-          <% (5..100).step(5).each do |i| %>
+          <% (10..50).step(10).each do |i| %>
             <option value="<%= i %>" <%= 'selected' if i == limit_rows %>><%= i %></option>
           <% end %>
       </select>

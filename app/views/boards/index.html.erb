@@ -41,6 +41,7 @@
             <th class="border-b-2 pb-2 text-center pr-4">Checked Cells</th>
             <th class="border-b-2 pb-2 text-center pr-4">Found Mines</th>
             <th class="border-b-2 pb-2 text-left pr-4">Email</th>
+            <th class="border-b-2 pb-2 text-left px-4">Created At</th>
             <th class="border-b-2 pb-2 text-left px-4">Actions</th>
           </tr>
         </thead>
@@ -54,6 +55,7 @@
               <td class="border-b pb-2 text-center pr-4"><%= board.clicked_cells.count %></td>
               <td class="border-b pb-2 text-center pr-4"><%= board.clicked_cells.select { |cell| board.mines.include?(cell) }.count %></td>
               <td class="border-b pb-2 pr-4"><%= board.user.email %></td>
+              <td class="border-b pb-2 pr-4"><%= board.created_at.localtime.strftime('%Y-%m-%d %H:%M:%S') %></td>
               <td class="border-b pb-2 px-4">
                 <%= link_to 'Show', board_path(board), class: 'text-blue-500 hover:text-blue-700' %>
               </td>
