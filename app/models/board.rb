@@ -6,15 +6,5 @@ class Board < ApplicationRecord
   validates :columns, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :number_of_mines, presence: true, numericality: { only_integer: true, greater_than: 0 }
 
-  def mines
-    stored_mines = self[:mines]
-    stored_mines = JSON.parse(stored_mines) if stored_mines.is_a?(String)
-    (stored_mines || []).map { |mine| mine.map(&:to_i) }
-  end
-
-  def clicked_cells
-    cells = self[:clicked_cells]
-    cells = JSON.parse(cells) if cells.is_a?(String)
-    (cells || []).map { |cell| cell.map(&:to_i) }
-  end
+  has_many :board_cells, dependent: :destroy
 end

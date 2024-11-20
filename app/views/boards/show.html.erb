@@ -23,23 +23,24 @@
   <% limit_columns = (params[:limit_columns] || 20).to_i %>
   <% end_row = [start_row + limit_rows - 1, @board.rows - 1].min %>
   <% end_column = [start_column + limit_columns - 1].min %>
-  <% mine_found = ActiveModel::Type::Boolean.new.cast(params[:mine_found]) %>
 
   <div class="flex flex-col items-center gap-2 w-full">
     <div class="flex gap-2 mb-4 items-center">
       <label for="limit_rows" class="font-bold">Rows:</label>
       <select id="limit_rows" name="limit_rows" class="border rounded pl-6" onchange="location.href='?limit_rows=' + this.value + '&limit_columns=' + document.getElementById('limit_columns').value + '&start_row=<%= start_row %>&start_column=<%= start_column %>'">
-          <% (10..50).step(10).each do |i| %>
-            <option value="<%= i %>" <%= 'selected' if i == limit_rows %>><%= i %></option>
-          <% end %>
+        <% (10..50).step(10).each do |i| %>
+          <option value="<%= i %>" <%= 'selected' if i == limit_rows %>><%= i %></option>
+        <% end %>
       </select>
       <label for="limit_columns" class="font-bold">Columns:</label>
       <select id="limit_columns" name="limit_columns" class="border rounded pl-6" onchange="location.href='?limit_rows=' + document.getElementById('limit_rows').value + '&limit_columns=' + this.value + '&start_row=<%= start_row %>&start_column=<%= start_column %>'">
-          <% (5..100).step(5).each do |i| %>
-            <option value="<%= i %>" <%= 'selected' if i == limit_columns %>><%= i %></option>
-          <% end %>
+        <% (10..50).step(10).each do |i| %>
+          <option value="<%= i %>" <%= 'selected' if i == limit_columns %>><%= i %></option>
+        <% end %>
       </select>
     </div>
+    <%# Now not play mode %>
+    <button id="toggle-play" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded hidden">Play</button> 
     <%= link_to '⬆️', board_path(@board, start_row: [start_row - limit_rows, 0].max, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "arrow-button #{start_row <= 0 ? 'bg-gray-300 pointer-events-none' : 'bg-blue-50 hover:bg-blue-200'}", disabled: start_row <= 0 %>
     <div class="flex items-center gap-2 max-w-full overflow-x-auto">
       <%= link_to '⬅️', board_path(@board, start_row: start_row, start_column: [start_column - limit_columns, 0].max, limit_rows: limit_rows, limit_columns: limit_columns), class: "arrow-button #{start_column <= 0 ? 'bg-gray-300 pointer-events-none'  : 'bg-blue-50 hover:bg-blue-200'}", disabled: start_column <= 0 %>
@@ -54,12 +55,18 @@
           <div class="flex">
             <div class="cell <%= row >= 1000 ? 'text-[10px]' : row >= 100 ? 'text-xs' : 'text-base' %> <%= row >= 1000 ? 'font-extralight' : row >= 100 ? 'font-light' : 'font-medium' %>"><%= row + 1 %></div>
             <% (start_column..end_column).each do |column| %>
-              <% cell = [row, column] %>
-              <div class="border cell leading-none text-lg">
-                <% if @board.clicked_cells.include?(cell) %>
-                  <%= @board.mines.include?(cell) ? '💣' : '✅' %>
+              <% cell = @board_cells[[row, column]] %>
+              <div class="border cell leading-none text-lg" id="cell-<%= row %>-<%= column %>">
+                <% if cell %>
+                  <% if cell.clicked %>
+                    <%= cell.mine ? '💣' : '✅' %>
+                  <% else %>
+                    <span class="mine-hidden"><%= cell.mine ? '💣' : '⬜️' %></span>
+                    <%= button_to '⬜️', click_cell_board_path(@board, row: row, column: column, start_row: start_row, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), method: :post, remote: true, class: "block w-full h-full p-0 border-0 bg-transparent mine-button", style: "display: none;" %>
+                  <% end %>
                 <% else %>
-                  <%= button_to '⬜️', click_cell_board_path(@board, row: row, column: column, start_row: start_row, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), method: :post, class: "block w-full h-full p-0 border-0 bg-transparent" %>
+                  <span class="mine-hidden">⬜️</span>
+                  <%= button_to '⬜️', click_cell_board_path(@board, row: row, column: column, start_row: start_row, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), method: :post, remote: true, class: "block w-full h-full p-0 border-0 bg-transparent mine-button", style: "display: none;" %>
                 <% end %>
               </div>
             <% end %>
@@ -71,14 +78,27 @@
     <%= link_to '⬇️', board_path(@board, start_row: [start_row + limit_rows, @board.rows - limit_rows].min, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "arrow-button #{start_row + limit_rows >= @board.rows ? 'bg-gray-300 pointer-events-none' : 'bg-blue-50 hover:bg-blue-200'}", disabled: start_row + limit_rows >= @board.rows %>
   </div>
 </div>
-<div id="snackbar" class="<%= mine_found ? 'block' : 'hidden' %> fixed z-10 w-1/2 bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-center py-2 px-4 rounded">
+<div id="snackbar" class="hidden fixed z-10 w-1/2 bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-center py-2 px-4 rounded">
   Congratulations! You found a mine 💥!
 </div>
-<%# if click mine, show snackbar %>
-<% if mine_found %>
-  <script>
+
+  <%# <script>
     var x = document.getElementById("snackbar");
     x.style.display = "block";
     setTimeout(function(){ x.style.display = "none"; }, 3000);
-  </script>
-<% end %>
+  </script> %>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const togglePlayButton = document.getElementById("toggle-play");
+    const mineButtons = document.querySelectorAll(".mine-button");
+    const mineHiddenSpans = document.querySelectorAll(".mine-hidden");
+
+    togglePlayButton.addEventListener("click", function() {
+      mineButtons.forEach(button => button.style.display = "block");
+      mineHiddenSpans.forEach(span => span.style.display = "none");
+      togglePlayButton.style.display = "none";
+    });
+  });
+</script>
