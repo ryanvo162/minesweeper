@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_20_022310) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_20_161817) do
+  create_table "board_cells", force: :cascade do |t|
+    t.integer "board_id", null: false
+    t.integer "row"
+    t.integer "column"
+    t.boolean "mine"
+    t.boolean "clicked"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id"], name: "index_board_cells_on_board_id"
+  end
+
   create_table "boards", force: :cascade do |t|
     t.string "name"
     t.integer "rows"
@@ -32,5 +43,6 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_20_022310) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "board_cells", "boards"
   add_foreign_key "boards", "users"
 end

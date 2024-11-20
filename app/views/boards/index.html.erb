@@ -12,21 +12,21 @@
       <%= submit_tag 'Search', class: 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' %>
     </div>
     <div class="flex items-center gap-4 mt-4">
-        <div class="flex items-center justify-self-center gap-4">
-          <label for="per_page" class="font-bold">Items per page:</label>
-          <select id="per_page" name="per_page" class="border rounded pl-6" onchange="this.form.submit()">
-              <% [5, 10, 20, 50].each do |count| %>
-                  <option value="<%= count %>" <%= 'selected' if count == (params[:per_page] || 10).to_i %>><%= count %></option>
-              <% end %>
-          </select>
-        </div>
-        <div class="flex items-center justify-self-center gap-4">
-          <label for="sort_order" class="font-bold">Sort by:</label>
-          <select id="sort_order" name="sort_order" class="border rounded pl-6" onchange="this.form.submit()">
-            <option value="desc" <%= 'selected' if params[:sort_order] == 'desc' %>>Newest First</option>
-            <option value="asc" <%= 'selected' if params[:sort_order] == 'asc' %>>Oldest First</option>
-          </select>
-        </div>
+      <div class="flex items-center justify-self-center gap-4">
+        <label for="per_page" class="font-bold">Items per page:</label>
+        <select id="per_page" name="per_page" class="border rounded pl-6" onchange="this.form.submit()">
+          <% [5, 10, 20, 50].each do |count| %>
+            <option value="<%= count %>" <%= 'selected' if count == (params[:per_page] || 10).to_i %>><%= count %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="flex items-center justify-self-center gap-4">
+        <label for="sort_order" class="font-bold">Sort by:</label>
+        <select id="sort_order" name="sort_order" class="border rounded pl-6" onchange="this.form.submit()">
+          <option value="desc" <%= 'selected' if params[:sort_order] == 'desc' %>>Newest First</option>
+          <option value="asc" <%= 'selected' if params[:sort_order] == 'asc' %>>Oldest First</option>
+        </select>
+      </div>
     </div>
   <% end %>
   <% if @boards.any? %>
@@ -41,7 +41,7 @@
             <th class="border-b-2 pb-2 text-center pr-4">Checked Cells</th>
             <th class="border-b-2 pb-2 text-center pr-4">Found Mines</th>
             <th class="border-b-2 pb-2 text-left pr-4">Email</th>
-            <th class="border-b-2 pb-2 text-left px-4">Created At</th>
+            <th class="border-b-2 pb-2 text-left pr-4">Created At</th>
             <th class="border-b-2 pb-2 text-left px-4">Actions</th>
           </tr>
         </thead>
@@ -52,8 +52,8 @@
               <td class="border-b pb-2 text-center pr-4"><%= board.rows %></td>
               <td class="border-b pb-2 text-center pr-4"><%= board.columns %></td>
               <td class="border-b pb-2 text-center pr-4"><%= board.number_of_mines %></td>
-              <td class="border-b pb-2 text-center pr-4"><%= board.clicked_cells.count %></td>
-              <td class="border-b pb-2 text-center pr-4"><%= board.clicked_cells.select { |cell| board.mines.include?(cell) }.count %></td>
+              <td class="border-b pb-2 text-center pr-4"><%= board.board_cells.where(clicked: true).count %></td>
+              <td class="border-b pb-2 text-center pr-4"><%= board.board_cells.where(clicked: true, mine: true).count %></td>
               <td class="border-b pb-2 pr-4"><%= board.user.email %></td>
               <td class="border-b pb-2 pr-4"><%= board.created_at.localtime.strftime('%Y-%m-%d %H:%M:%S') %></td>
               <td class="border-b pb-2 px-4">
