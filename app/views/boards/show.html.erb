@@ -23,6 +23,7 @@
   <% limit_columns = (params[:limit_columns] || 20).to_i %>
   <% end_row = [start_row + limit_rows - 1, @board.rows - 1].min %>
   <% end_column = [start_column + limit_columns - 1].min %>
+  <% mine_found = ActiveModel::Type::Boolean.new.cast(params[:mine_found]) %>
 
   <div class="flex flex-col items-center gap-2 w-full">
     <div class="flex gap-2 mb-4 items-center">
@@ -69,7 +70,15 @@
     </div>
     <%= link_to '⬇️', board_path(@board, start_row: [start_row + limit_rows, @board.rows - limit_rows].min, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "arrow-button #{start_row + limit_rows >= @board.rows ? 'bg-gray-300 pointer-events-none' : 'bg-blue-50 hover:bg-blue-200'}", disabled: start_row + limit_rows >= @board.rows %>
   </div>
-  <div id="snackbar" class="hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-center py-2 px-4 rounded">
-    Congratulations! You found a mine!
-  </div>
 </div>
+<div id="snackbar" class="<%= mine_found ? 'block' : 'hidden' %> fixed z-10 w-1/2 bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-center py-2 px-4 rounded">
+  Congratulations! You found a mine 💥!
+</div>
+<%# if click mine, show snackbar %>
+<% if mine_found %>
+  <script>
+    var x = document.getElementById("snackbar");
+    x.style.display = "block";
+    setTimeout(function(){ x.style.display = "none"; }, 3000);
+  </script>
+<% end %>
