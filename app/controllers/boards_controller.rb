@@ -19,7 +19,8 @@ class BoardsController < ApplicationController
     clicked_cells << [row, column]
     @board.clicked_cells = clicked_cells
     @board.save
-    redirect_to board_path(@board, start_row: params[:start_row], start_column: params[:start_column], limit_rows: params[:limit_rows], limit_columns: params[:limit_columns])
+    mine_found = @board.mines.include?([row, column])
+    redirect_to board_path(@board, start_row: params[:start_row], start_column: params[:start_column], limit_rows: params[:limit_rows], limit_columns: params[:limit_columns], mine_found: mine_found)
   end
 
   def create
