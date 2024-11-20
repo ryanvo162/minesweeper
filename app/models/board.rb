@@ -11,4 +11,10 @@ class Board < ApplicationRecord
     stored_mines = JSON.parse(stored_mines) if stored_mines.is_a?(String)
     (stored_mines || []).map { |mine| mine.map(&:to_i) }
   end
+
+  def clicked_cells
+    cells = self[:clicked_cells]
+    cells = JSON.parse(cells) if cells.is_a?(String)
+    (cells || []).map { |cell| cell.map(&:to_i) }
+  end
 end

@@ -12,5 +12,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "home#index"
-  resources :boards, only: [:show, :create, :index, :destroy]
+  resources :boards, only: [:show, :create, :index, :destroy] do
+    post 'click_cell', on: :member
+  end
 end
