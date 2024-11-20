@@ -53,8 +53,13 @@
           <div class="flex">
             <div class="w-6 h-6 flex items-center justify-center <%= row >= 1000 ? 'text-[10px]' : row >= 100 ? 'text-xs' : 'text-base' %> <%= row >= 1000 ? 'font-extralight' : row >= 100 ? 'font-light' : 'font-medium' %>"><%= row + 1 %></div>
             <% (start_column..end_column).each do |column| %>
+              <% cell = [row, column] %>
               <div class="border flex items-center justify-center w-6 h-6 leading-none text-lg">
-                <%= @board.mines.include?([row, column]) ? '💣' : '⬜️' %>
+                <% if @board.clicked_cells.include?(cell) %>
+                  <%= @board.mines.include?(cell) ? '💣' : '✅' %>
+                <% else %>
+                  <%= button_to '⬜️', click_cell_board_path(@board, row: row, column: column, start_row: start_row, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), method: :post, class: "block w-full h-full p-0 border-0 bg-transparent" %>
+                <% end %>
               </div>
             <% end %>
           </div>
@@ -63,5 +68,8 @@
       <%= link_to '➡️', board_path(@board, start_row: start_row, start_column: [start_column + limit_columns, @board.columns - limit_columns].min, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_column + limit_columns >= @board.columns ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_column + limit_columns >= @board.columns %>
     </div>
     <%= link_to '⬇️', board_path(@board, start_row: [start_row + limit_rows, @board.rows - limit_rows].min, start_column: start_column, limit_rows: limit_rows, limit_columns: limit_columns), class: "flex items-center justify-center w-10 h-10 #{start_row + limit_rows >= @board.rows ? 'bg-gray-300' : 'bg-blue-50 hover:bg-blue-200'} text-white font-bold rounded", disabled: start_row + limit_rows >= @board.rows %>
+  </div>
+  <div id="snackbar" class="hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-center py-2 px-4 rounded">
+    Congratulations! You found a mine!
   </div>
 </div>
