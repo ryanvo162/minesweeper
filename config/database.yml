@@ -30,5 +30,15 @@ test:
   password: <%= ENV.fetch('DB_PASSWORD') { '12345678' } %>
 
 production:
-  <<: *default
-  url: <%= ENV['JAWSDB_URL'] %>
+  primary: &primary_production
+    <<: *default
+    url: <%= ENV['JAWSDB_URL'] %>
+  cable:
+    <<: *primary_production
+    database: <%= ENV.fetch('DB_NAME_PROD') { 'minesweeper' } %>
+  queue:
+    <<: *primary_production
+    database: <%= ENV.fetch('DB_NAME_PROD') { 'minesweeper' } %>
+  cache:
+    <<: *primary_production
+    database: <%= ENV.fetch('DB_NAME_PROD') { 'minesweeper' } %>
