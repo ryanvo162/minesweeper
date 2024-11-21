@@ -35,5 +35,5 @@
 ## Specifications
 
 - Framework: Rails
-- Database: PostgreSQL
+- Database: MySQL
 - Tools: Docker, Docker Compose
