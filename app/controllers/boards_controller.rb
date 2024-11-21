@@ -54,13 +54,14 @@ class BoardsController < ApplicationController
   end
 
   def generate_mines(board)
-    total_cells = board.rows * board.columns
-    mine_positions = (0...total_cells).to_a.sample(board.number_of_mines)
-    board_cells = mine_positions.map do |pos|
-      row = pos / board.columns
-      column = pos % board.columns
-      { board_id: board.id, row: row, column: column, mine: true, created_at: Time.now, updated_at: Time.now }
+    ActiveRecord::Base.transaction do
+      total_cells = board.rows * board.columns
+      mine_positions = (0...total_cells).to_a.sample(board.number_of_mines)
+      board_cells = mine_positions.map do |pos|
+        row = pos / board.columns
+        column = pos % board.columns
+        BoardCell.create(board: board, row: row, column: column, mine: true)
+      end
     end
-    BoardCell.insert_all(board_cells)
   end
 end
