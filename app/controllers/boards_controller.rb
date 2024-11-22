@@ -55,12 +55,18 @@ class BoardsController < ApplicationController
 
   def generate_mines(board)
     ActiveRecord::Base.transaction do
-      total_cells = board.rows * board.columns
-      mine_positions = (0...total_cells).to_a.sample(board.number_of_mines)
-      board_cells = mine_positions.map do |pos|
-        row = pos / board.columns
-        column = pos % board.columns
-        BoardCell.create(board: board, row: row, column: column, mine: true)
+      possible_cells = Set.new
+
+      while possible_cells.size < board.number_of_mines
+        row = rand(board.rows)
+        column = rand(board.columns)
+        possible_cells << [row, column]
+      end
+      cells = possible_cells.map do |row, column|
+        { row: row, column: column, mine: true ,board_id: board.id}
+      end
+      cells.each_slice(1000) do |slice|
+        BoardCell.insert_all(slice)
       end
     end
   end
